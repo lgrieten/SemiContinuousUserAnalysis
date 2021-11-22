@@ -1,0 +1,42 @@
+---
+title: "SemiContinuousDataAnalysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+rm(list = ls())
+
+```
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+
+
+df_window = read.csv("df_window.csv")
+
+df_window$Time = as.POSIXct(df_window$data.measurement_timestamp/1000,
+                            origin = "1970-01-01 00:00:00:000")
+df_window$Month = months(df_window$Time)
+mnt = unique(df_window$Month)
+
+for(i in 1:length(mnt))
+{
+  df = subset(df_window, Month == mnt[i] & is.na(data.heartrate) == FALSE)
+  p = ggplot(df, aes(x = Time, y = data.heartrate, color=data.indicator)) +
+    geom_point() + labs(title = mnt[i]) +
+    theme_bw() +
+    scale_colour_manual(values = c("warning" = "#f09034", "urgent" = "#dc324a",
+                                   "normal" = "#6bacb2","Quality" = "white"))
+  print(p)
+}
+
+```
+
